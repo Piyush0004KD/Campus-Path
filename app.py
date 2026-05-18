@@ -46,7 +46,7 @@ def generate_plan():
         planner.load_courses()
         planner.set_completed_courses(completed)
         planner.build_graph()
-        sorted_courses = planner.topological_sort()
+        sorted_courses = planner.topological_sort(include_completed=True)
         semesters = planner.generate_semester_layout(sorted_courses, max_credits=15)
         
         # map courses to their details for the frontend

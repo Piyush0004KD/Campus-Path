@@ -41,7 +41,7 @@ class CoursePlanner {
         }
     }
 
-    topologicalSort() {
+    topologicalSort(includeCompleted = false) {
         const visited = new Set();
         const recStack = new Set();
         const stack = [];
@@ -70,15 +70,15 @@ class CoursePlanner {
         }
         
         const topologicalOrder = stack.reverse();
+        if (includeCompleted) {
+            return topologicalOrder;
+        }
         return topologicalOrder.filter(c => !this.completedCourses.has(c));
     }
 
     generateSemesterLayout(sortedCourses, maxCredits = 15) {
         const semesters = [];
         const completionTime = {};
-        for (const c of this.completedCourses) {
-            completionTime[c] = -1;
-        }
         
         for (const course of sortedCourses) {
             const credits = this.courses[course].credits;
@@ -98,9 +98,13 @@ class CoursePlanner {
                     semesters.push({ courses: [], credits: 0 });
                 }
                 
-                if (semesters[targetSem].credits + credits <= maxCredits) {
-                    semesters[targetSem].courses.push(course);
-                    semesters[targetSem].credits += credits;
+                const plannedCredits = semesters[targetSem].plannedCredits || 0;
+                if (plannedCredits + credits <= maxCredits) {
+                    semesters[targetSem].plannedCredits = plannedCredits + credits;
+                    if (!this.completedCourses.has(course)) {
+                        semesters[targetSem].courses.push(course);
+                        semesters[targetSem].credits += credits;
+                    }
                     completionTime[course] = targetSem;
                     break;
                 } else {

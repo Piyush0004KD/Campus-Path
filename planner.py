@@ -28,7 +28,7 @@ class CoursePlanner:
                     self.graph[prereq] = []
                 self.graph[prereq].append(course_id)
 
-    def topological_sort(self):
+    def topological_sort(self, include_completed=False):
         """
         DFS-based Topological Sort (Decrease and Conquer).
         Returns a valid sequence of remaining courses.
@@ -59,6 +59,9 @@ class CoursePlanner:
         # Reverse it to get the correct order (prerequisites first)
         topological_order = stack[::-1]
         
+        if include_completed:
+            return topological_order
+        
         # Filter out already completed courses
         remaining_courses = [c for c in topological_order if c not in self.completed_courses]
         return remaining_courses
@@ -75,9 +78,8 @@ class CoursePlanner:
         # We need to ensure that we don't take a course in the same semester as its prereq
         # A simple way to do this is to keep track of what we're taking "this" semester
         
-        # Keep track of when a course was completed (semester index)
-        # Completed courses are effectively done in semester -1
-        completion_time = {c: -1 for c in self.completed_courses}
+        # Keep the original full-plan semester positions, then hide completed courses.
+        completion_time = {}
         
         for course in sorted_courses:
             credits = self.courses[course]["credits"]
@@ -102,9 +104,12 @@ class CoursePlanner:
                     semesters.append({"courses": [], "credits": 0})
                 
                 # Check if it fits in the target semester
-                if semesters[target_sem]["credits"] + credits <= max_credits:
-                    semesters[target_sem]["courses"].append(course)
-                    semesters[target_sem]["credits"] += credits
+                planned_credits = semesters[target_sem].get("planned_credits", 0)
+                if planned_credits + credits <= max_credits:
+                    semesters[target_sem]["planned_credits"] = planned_credits + credits
+                    if course not in self.completed_courses:
+                        semesters[target_sem]["courses"].append(course)
+                        semesters[target_sem]["credits"] += credits
                     completion_time[course] = target_sem
                     break
                 else:

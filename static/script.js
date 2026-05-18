@@ -25,6 +25,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Course Data Loading ---
     const courseListDiv = document.getElementById('course-list');
+    let courseSemesterMap = {};
+    let maxSemesterIndex = -1;
+
+    function getCompletedCourses() {
+        const checkboxes = document.querySelectorAll('.course-checkbox:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    function updateCourseLocks() {
+        const checkboxes = Array.from(document.querySelectorAll('.course-checkbox'));
+        if (!checkboxes.length || maxSemesterIndex < 0) return;
+
+        const currentSemester = [...Array(maxSemesterIndex + 1).keys()].find(semIndex => {
+            return checkboxes.some(cb => courseSemesterMap[cb.value] === semIndex && !cb.checked);
+        });
+
+        checkboxes.forEach(checkbox => {
+            const wrapper = checkbox.closest('.checkbox-wrapper');
+            const semesterIndex = courseSemesterMap[checkbox.value];
+            const isLocked = currentSemester !== undefined && semesterIndex > currentSemester;
+
+            if (isLocked && checkbox.checked) {
+                checkbox.checked = false;
+            }
+
+            checkbox.disabled = isLocked;
+            wrapper.classList.toggle('locked', isLocked);
+            wrapper.title = isLocked
+                ? `Complete Semester ${currentSemester + 1} before marking this course.`
+                : '';
+        });
+    }
     
     fetch('/api/courses')
         .then(response => response.json())
@@ -38,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkbox.type = 'checkbox';
                 checkbox.value = id;
                 checkbox.className = 'course-checkbox';
+                checkbox.addEventListener('change', updateCourseLocks);
                 
                 const text = document.createTextNode(` ${id} - ${details.name}`);
                 
@@ -45,6 +78,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrapper.appendChild(text);
                 courseListDiv.appendChild(wrapper);
             }
+
+            return fetch('/api/plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ completed: [] })
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) return;
+
+            data.semesters.forEach((sem, semIndex) => {
+                sem.courses.forEach(course => {
+                    courseSemesterMap[course.id] = semIndex;
+                });
+                maxSemesterIndex = Math.max(maxSemesterIndex, semIndex);
+            });
+
+            updateCourseLocks();
         })
         .catch(err => {
             courseListDiv.innerHTML = '<div class="alert error">Failed to load courses. Is the server running?</div>';
@@ -72,8 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hideAlert();
         
         // Get completed courses
-        const checkboxes = document.querySelectorAll('.course-checkbox:checked');
-        const completed = Array.from(checkboxes).map(cb => cb.value);
+        const completed = getCompletedCourses();
         
         // Add loading state
         const originalText = btnGenerate.innerHTML;

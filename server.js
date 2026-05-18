@@ -57,7 +57,7 @@ app.post('/api/plan', (req, res) => {
         planner.setCompletedCourses(completed);
         planner.buildGraph();
         
-        const sortedCourses = planner.topologicalSort();
+        const sortedCourses = planner.topologicalSort(true);
         const semesters = planner.generateSemesterLayout(sortedCourses, 15);
         
         const semData = semesters.map(sem => {

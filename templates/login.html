@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusPath | Student Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-body">
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    
+    <div class="login-container fade-in">
+        <div class="login-card glass-panel">
+            <div class="logo text-center" style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2.5rem;">Campus<span>Path</span></h1>
+                <p>Smart Course Prerequisite Planner</p>
+            </div>
+            
+            <h2 class="text-center" style="margin-bottom: 1.5rem;">Student Login</h2>
+            
+            <form action="{{ url_for('login') }}" method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="student_id">Student ID</label>
+                    <input type="text" id="student_id" name="student_id" placeholder="e.g. S12345" required autocomplete="off">
+                </div>
+                
+                <button type="submit" class="btn primary-btn" style="margin-top: 1rem;">
+                    <span class="btn-text">Log In</span>
+                    <span class="btn-glow"></span>
+                </button>
+            </form>
+            
+            <p class="text-center subtitle" style="margin-top: 1rem; font-size: 0.8rem;">
+                *For hackathon demo, any ID works!
+            </p>
+        </div>
+    </div>
+</body>
+</html>

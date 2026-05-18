@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusPath | Premium Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+    <!-- Animated background specific to login -->
+    <div class="login-bg-grid"></div>
+    <div class="login-orbs">
+        <div class="orb orb-primary"></div>
+        <div class="orb orb-secondary"></div>
+    </div>
+    
+    <div class="login-container fade-in-up">
+        <!-- The premium glass card -->
+        <div class="login-card premium-glass">
+            
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 16V12" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8H12.01" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="paint0_linear" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3b82f6" />
+                                <stop offset="1" stop-color="#8b5cf6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Campus<span>Path</span></h1>
+                </div>
+            </div>
+            
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to plan your hackathon journey.</p>
+            </div>
+            
+            <form id="login-form" class="login-form modern-form">
+                <div class="input-group">
+                    <input type="text" id="student_id" name="student_id" required autocomplete="off">
+                    <label for="student_id">Student ID (e.g. S101)</label>
+                    <div class="input-highlight"></div>
+                </div>
+                
+                <button type="submit" class="btn premium-btn">
+                    <span class="btn-text">Authenticate</span>
+                    <div class="btn-flare"></div>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Don't have an ID? <span>Any ID works for the demo!</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.querySelector('.btn-text').innerText;
+            
+            btn.querySelector('.btn-text').innerText = 'Authenticating...';
+            btn.classList.add('loading');
+            
+            const studentId = document.getElementById('student_id').value;
+            
+            // Artificial delay to show off the cool loading state
+            await new Promise(r => setTimeout(r, 800));
+            
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_id: studentId })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    btn.classList.remove('loading');
+                    btn.classList.add('success');
+                    btn.querySelector('.btn-text').innerText = 'Success!';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 500);
+                } else {
+                    btn.classList.remove('loading');
+                    btn.querySelector('.btn-text').innerText = originalText;
+                    alert('Login failed: ' + data.error);
+                }
+            } catch (err) {
+                btn.classList.remove('loading');
+                btn.querySelector('.btn-text').innerText = originalText;
+                alert('Connection error.');
+            }
+        });
+    </script>
+</body>
+</html>

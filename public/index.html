@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusPath | Smart Planner (Node.js Edition)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    
+    <header class="glass-header">
+        <div class="logo">
+            <h1>Campus<span>Path</span></h1>
+            <p>Smart Course Prerequisite Planner</p>
+        </div>
+        <nav style="align-items: center;">
+            <span class="user-badge" id="user-badge" style="margin-right: 15px; color: var(--text-secondary); display: none;">Logged in as: <strong id="student-id-display" style="color: var(--accent-primary);"></strong></span>
+            <button id="nav-planner" class="nav-btn active">Course Planner</button>
+            <button id="nav-concurrency" class="nav-btn">Concurrency Demo</button>
+            <button id="btn-logout" class="btn danger-btn" style="padding: 0.4rem 1rem; width: auto; margin: 0; display: none;">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Planner Section -->
+        <section id="section-planner" class="active-section fade-in">
+            <div class="container">
+                <div class="sidebar glass-panel">
+                    <h2>Completed Courses</h2>
+                    <p class="subtitle">Select the courses you have already finished.</p>
+                    <div id="course-list" class="course-checklist custom-scroll">
+                        <div class="loading-text">Loading courses...</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="btn-generate" class="btn primary-btn">
+                            <span class="btn-text">Generate Path</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                        <button id="btn-cycle" class="btn secondary-btn warning-btn">Test Cycle Detection</button>
+                    </div>
+                </div>
+                
+                <div class="content glass-panel">
+                    <h2>Your Semester Layout</h2>
+                    <div id="cycle-alert" class="alert hidden"></div>
+                    <div id="semester-container" class="semester-grid custom-scroll">
+                        <div class="empty-state">
+                            <div class="empty-icon">🗺️</div>
+                            <p>Select your completed courses and click "Generate Path" to see your topological sort and semester layout.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Concurrency Section -->
+        <section id="section-concurrency" class="hidden-section fade-in">
+            <div class="container single-col">
+                <div class="glass-panel text-center concurrency-panel">
+                    <h2>Async Concurrency Demo (Node.js)</h2>
+                    <p class="subtitle">Simulating multiple concurrent async callbacks (students) trying to access a shared resource (seats in CS409) using the Event Loop.</p>
+                    
+                    <div class="simulation-config">
+                        <div class="config-item">
+                            <span class="label">Target Course</span>
+                            <span class="value">CS409 (Compilers)</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="label">Total Seats</span>
+                            <span class="value">10</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="label">Concurrent Students</span>
+                            <span class="value">50</span>
+                        </div>
+                    </div>
+
+                    <div class="concurrency-actions">
+                        <button id="btn-unsafe" class="btn danger-btn">Run Unsafe (No Mutex)</button>
+                        <button id="btn-safe" class="btn success-btn">Run Safe (Async Mutex)</button>
+                    </div>
+                    
+                    <div id="concurrency-results" class="results-panel hidden">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
